@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>School ERP - Standalone Edition</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app-container">
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">🏫</div>
+        <div class="brand-info">
+          <h2>School ERP</h2>
+          <span>Standalone Edition</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a class="nav-item active" data-view="dashboard">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a class="nav-item" data-view="students">
+          <span class="nav-icon">🎓</span>
+          <span>Students (SIS)</span>
+        </a>
+        <a class="nav-item" data-view="admissions">
+          <span class="nav-icon">📝</span>
+          <span>Admissions</span>
+        </a>
+        <a class="nav-item" data-view="staff">
+          <span class="nav-icon">👨‍🏫</span>
+          <span>Staff & HR</span>
+        </a>
+        <a class="nav-item" data-view="attendance">
+          <span class="nav-icon">📅</span>
+          <span>Attendance</span>
+        </a>
+        <a class="nav-item" data-view="fees">
+          <span class="nav-icon">💰</span>
+          <span>Fees & Finance</span>
+        </a>
+        <a class="nav-item" data-view="exams">
+          <span class="nav-icon">📑</span>
+          <span>Examinations</span>
+        </a>
+        <a class="nav-item" data-view="timetable">
+          <span class="nav-icon">🕒</span>
+          <span>Timetable</span>
+        </a>
+        <a class="nav-item" data-view="library">
+          <span class="nav-icon">📚</span>
+          <span>Library</span>
+        </a>
+        <a class="nav-item" data-view="transport">
+          <span class="nav-icon">🚌</span>
+          <span>Transport</span>
+        </a>
+        <a class="nav-item" data-view="notices">
+          <span class="nav-icon">📢</span>
+          <span>Notices</span>
+        </a>
+        <a class="nav-item" data-view="reports">
+          <span class="nav-icon">📈</span>
+          <span>Reports & UDISE+</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div><strong>Storage:</strong> LocalStorage Demo</div>
+        <div>No external server required</div>
+      </div>
+    </aside>
+
+    <!-- Main Application Wrapper -->
+    <div id="main-wrapper">
+      <!-- Top Navbar -->
+      <header id="top-navbar">
+        <div class="navbar-left">
+          <button id="btn-toggle-menu" class="menu-toggle" aria-label="Toggle menu">☰</button>
+          <div class="page-title-box">
+            <h1 id="page-title">Dashboard Overview</h1>
+            <span id="page-subtitle">Welcome to School Management System</span>
+          </div>
+        </div>
+
+        <div class="navbar-right">
+          <!-- Tenant / School Selector -->
+          <div class="school-selector-wrap">
+            <select id="tenant-select" title="Switch School Tenant">
+              <option value="school-1">Delhi Public Model School (DPMS-01)</option>
+              <option value="school-2">St. Xavier International (SXIA-02)</option>
+            </select>
+          </div>
+
+          <span class="badge badge-demo" title="Data stored only in this browser's localStorage">Standalone Demo Mode</span>
+
+          <button id="btn-reset-data" class="btn btn-secondary btn-sm" title="Restore sample demo dataset">
+            🔄 Reset Demo Data
+          </button>
+
+          <button id="btn-api-info" class="btn btn-secondary btn-sm" title="Information on connecting to real backend API">
+            🔌 API Guide
+          </button>
+
+          <div class="user-profile">
+            <div class="user-avatar">AD</div>
+            <span style="font-size: 0.85rem; font-weight: 600;">Admin</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content Container -->
+      <main id="content-container">
+        <!-- 1. DASHBOARD VIEW -->
+        <section id="view-dashboard" class="view-section active">
+          <div class="metric-grid">
+            <div class="metric-card">
+              <div class="metric-icon blue">🎓</div>
+              <div class="metric-info">
+                <h4>Total Students</h4>
+                <div class="value" id="kpi-students">0</div>
+                <div class="subtitle">Enrolled & Active</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon green">👨‍🏫</div>
+              <div class="metric-info">
+                <h4>Teaching Staff</h4>
+                <div class="value" id="kpi-staff">0</div>
+                <div class="subtitle">Academic Faculty</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon amber">💰</div>
+              <div class="metric-info">
+                <h4>Fee Collection</h4>
+                <div class="value" id="kpi-fees">₹0</div>
+                <div class="subtitle">Total Recorded (YTD)</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon purple">📅</div>
+              <div class="metric-info">
+                <h4>Today's Attendance</h4>
+                <div class="value" id="kpi-attendance">0%</div>
+                <div class="subtitle">Present Average</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem;">
+            <!-- Recent Admissions -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Recent Admission Applications</h3>
+                <button class="btn btn-secondary btn-sm" onclick="navigateTo('admissions')">View All</button>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="data-table" id="dashboard-admissions-table">
+                    <thead>
+                      <tr>
+                        <th>Applicant</th>
+                        <th>Class</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Fee Transactions -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Recent Fee Collections</h3>
+                <button class="btn btn-secondary btn-sm" onclick="navigateTo('fees')">View All</button>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="data-table" id="dashboard-fees-table">
+                    <thead>
+                      <tr>
+                        <th>Receipt #</th>
+                        <th>Student</th>
+                        <th>Amount</th>
+                        <th>Mode</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. STUDENTS (SIS) VIEW -->
+        <section id="view-students" class="view-section">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <input type="text" id="students-search" class="form-input search-input" placeholder="Search by name or admission no...">
+              <select id="students-filter-class" class="form-select">
+                <option value="">All Classes</option>
+                <option value="Grade 9">Grade 9</option>
+                <option value="Grade 10">Grade 10</option>
+                <option value="Grade 11">Grade 11</option>
+                <option value="Grade 12">Grade 12</option>
+              </select>
+              <select id="students-filter-status" class="form-select">
+                <option value="">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="withdrawn">Withdrawn</option>
+                <option value="transferred">Transferred</option>
+              </select>
+            </div>
+            <div class="toolbar-right">
+              <button id="btn-export-students-csv" class="btn btn-secondary">📥 Export CSV</button>
+              <button id="btn-add-student" class="btn btn-primary">+ Add Student</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body" style="padding: 0;">
+              <div class="table-responsive">
+                <table class="data-table" id="students-table">
+                  <thead>
+                    <tr>
+                      <th>Adm No</th>
+                      <th>Student Name</th>
+                      <th>Class & Sec</th>
+                      <th>Roll No</th>
+                      <th>Guardian</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. ADMISSIONS VIEW -->
+        <section id="view-admissions" class="view-section">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <input type="text" id="admissions-search" class="form-input search-input" placeholder="Search applicant...">
+              <select id="admissions-filter-status" class="form-select">
+                <option value="">All Application Statuses</option>
+                <option value="submitted">Submitted</option>
+                <option value="under_review">Under Review</option>
+                <option value="approved">Approved</option>
+                <option value="enrolled">Enrolled</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+            <div class="toolbar-right">
+              <button id="btn-new-admission" class="btn btn-primary">+ New Application</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body" style="padding: 0;">
+              <div class="table-responsive">
+                <table class="data-table" id="admissions-table">
+                  <thead>
+                    <tr>
+                      <th>App No</th>
+                      <th>Applicant Name</th>
+                      <th>Applying For</th>
+                      <th>Guardian</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. STAFF & HR VIEW -->
+        <section id="view-staff" class="view-section">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <input type="text" id="staff-search" class="form-input search-input" placeholder="Search staff member...">
+              <select id="staff-filter-dept" class="form-select">
+                <option value="">All Departments</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Science">Science</option>
+                <option value="Languages">Languages</option>
+                <option value="Humanities">Humanities</option>
+                <option value="Administration">Administration</option>
+              </select>
+            </div>
+            <div class="toolbar-right">
+              <button id="btn-add-staff" class="btn btn-primary">+ Add Staff Member</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body" style="padding: 0;">
+              <div class="table-responsive">
+                <table class="data-table" id="staff-table">
+                  <thead>
+                    <tr>
+                      <th>Emp Code</th>
+                      <th>Staff Name</th>
+                      <th>Designation</th>
+                      <th>Department</th>
+                      <th>Email / Contact</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. ATTENDANCE VIEW -->
+        <section id="view-attendance" class="view-section">
+          <div class="card">
+            <div class="card-header">
+              <h3>Daily Roster Attendance Marking</h3>
+            </div>
+            <div class="card-body">
+              <div class="form-row" style="margin-bottom: 1rem;">
+                <div class="form-group">
+                  <label for="att-class">Select Class</label>
+                  <select id="att-class" class="form-select">
+                    <option value="Grade 10">Grade 10</option>
+                    <option value="Grade 9">Grade 9</option>
+                    <option value="Grade 11">Grade 11</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="att-section">Section</label>
+                  <select id="att-section" class="form-select">
+                    <option value="A">Section A</option>
+                    <option value="B">Section B</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="att-date">Attendance Date</label>
+                  <input type="date" id="att-date" class="form-input">
+                </div>
+                <div class="form-group" style="display: flex; align-items: flex-end; gap: 0.5rem;">
+                  <button id="btn-load-attendance" class="btn btn-secondary">Load Roster</button>
+                  <button id="btn-mark-all-present" class="btn btn-secondary">Mark All Present</button>
+                </div>
+              </div>
+
+              <div class="table-responsive">
+                <table class="data-table" id="attendance-roster-table">
+                  <thead>
+                    <tr>
+                      <th>Roll #</th>
+                      <th>Student Name</th>
+                      <th>Admission No</th>
+                      <th>Attendance Status</th>
+                      <th>Remarks</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+
+              <div style="margin-top: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                <div id="attendance-stats-summary" style="font-size: 0.9rem; font-weight: 500; color: var(--text-muted);">
+                  Total: 0 | Present: 0 | Absent: 0 | Late: 0
+                </div>
+                <button id="btn-save-attendance" class="btn btn-success">💾 Save Attendance Records</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. FEES & FINANCE VIEW -->
+        <section id="view-fees" class="view-section">
+          <div class="metric-grid">
+            <div class="metric-card">
+              <div class="metric-icon green">💵</div>
+              <div class="metric-info">
+                <h4>Total Collected</h4>
+                <div class="value" id="fees-collected-sum">₹0</div>
+                <div class="subtitle">Valid Receipts</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon amber">⏳</div>
+              <div class="metric-info">
+                <h4>Total Outstanding</h4>
+                <div class="value" id="fees-pending-sum">₹45,000</div>
+                <div class="subtitle">Current Term Dues</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon purple">🧾</div>
+              <div class="metric-info">
+                <h4>Total Transactions</h4>
+                <div class="value" id="fees-txn-count">0</div>
+                <div class="subtitle">Posted Receipts</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <input type="text" id="fees-search" class="form-input search-input" placeholder="Search receipt or student...">
+              <select id="fees-filter-mode" class="form-select">
+                <option value="">All Payment Modes</option>
+                <option value="Cash">Cash</option>
+                <option value="Online / UPI">Online / UPI</option>
+                <option value="Cheque">Cheque</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+              </select>
+            </div>
+            <div class="toolbar-right">
+              <button id="btn-export-fees-csv" class="btn btn-secondary">📥 Export Ledger</button>
+              <button id="btn-collect-fee" class="btn btn-primary">+ Collect Fee Payment</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body" style="padding: 0;">
+              <div class="table-responsive">
+                <table class="data-table" id="fees-table">
+                  <thead>
+                    <tr>
+                      <th>Receipt #</th>
+                      <th>Date</th>
+                      <th>Student Name</th>
+                      <th>Fee Head</th>
+                      <th>Amount</th>
+                      <th>Mode</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7. EXAMINATIONS & REPORT CARDS VIEW -->
+        <section id="view-exams" class="view-section">
+          <div class="card">
+            <div class="card-header">
+              <h3>Examinations & CBSE 9-Point Grading Scale</h3>
+            </div>
+            <div class="card-body">
+              <div class="form-row" style="margin-bottom: 1rem;">
+                <div class="form-group">
+                  <label for="exam-term">Exam Term</label>
+                  <select id="exam-term" class="form-select">
+                    <option value="Term 1 Mid-Term">Term 1 Mid-Term Examination</option>
+                    <option value="Term 2 Annual">Term 2 Annual Examination</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="exam-class">Class</label>
+                  <select id="exam-class" class="form-select">
+                    <option value="Grade 10">Grade 10</option>
+                    <option value="Grade 9">Grade 9</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="exam-subject">Subject</label>
+                  <select id="exam-subject" class="form-select">
+                    <option value="Mathematics">Mathematics (Max: 100)</option>
+                    <option value="Science">Science (Max: 100)</option>
+                    <option value="English">English (Max: 100)</option>
+                    <option value="Social Studies">Social Studies (Max: 100)</option>
+                  </select>
+                </div>
+                <div class="form-group" style="display: flex; align-items: flex-end;">
+                  <button id="btn-load-marks" class="btn btn-secondary">Load Marks Sheet</button>
+                </div>
+              </div>
+
+              <div class="table-responsive">
+                <table class="data-table" id="marks-table">
+                  <thead>
+                    <tr>
+                      <th>Roll #</th>
+                      <th>Student Name</th>
+                      <th>Max Marks</th>
+                      <th>Marks Obtained</th>
+                      <th>Percentage</th>
+                      <th>CBSE Grade</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+
+              <div style="margin-top: 1rem; display: flex; justify-content: flex-end;">
+                <button id="btn-save-marks" class="btn btn-success">💾 Save Entered Marks</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 8. TIMETABLE VIEW -->
+        <section id="view-timetable" class="view-section">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <label style="font-weight: 600; font-size: 0.9rem;">Class Schedule:</label>
+              <select id="timetable-class-select" class="form-select">
+                <option value="Grade 10-A">Grade 10-A</option>
+                <option value="Grade 10-B">Grade 10-B</option>
+                <option value="Grade 9-A">Grade 9-A</option>
+              </select>
+            </div>
+            <div class="toolbar-right">
+              <button id="btn-add-timetable-slot" class="btn btn-primary">+ Assign Class Period</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body">
+              <div class="timetable-grid" id="timetable-container">
+                <!-- Timetable Grid generated dynamically by JS -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 9. LIBRARY VIEW -->
+        <section id="view-library" class="view-section">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <input type="text" id="library-search" class="form-input search-input" placeholder="Search book title, author, or ISBN...">
+              <select id="library-filter-cat" class="form-select">
+                <option value="">All Categories</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Science">Science</option>
+                <option value="Literature">Literature</option>
+                <option value="History">History</option>
+              </select>
+            </div>
+            <div class="toolbar-right">
+              <button id="btn-issue-book" class="btn btn-secondary">📖 Issue Book</button>
+              <button id="btn-add-book" class="btn btn-primary">+ Add New Book</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body" style="padding: 0;">
+              <div class="table-responsive">
+                <table class="data-table" id="library-table">
+                  <thead>
+                    <tr>
+                      <th>ISBN</th>
+                      <th>Title</th>
+                      <th>Author</th>
+                      <th>Category</th>
+                      <th>Total Copies</th>
+                      <th>Available</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 10. TRANSPORT VIEW -->
+        <section id="view-transport" class="view-section">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <input type="text" id="transport-search" class="form-input search-input" placeholder="Search route or bus...">
+            </div>
+            <div class="toolbar-right">
+              <button id="btn-add-route" class="btn btn-primary">+ Add Bus Route</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body" style="padding: 0;">
+              <div class="table-responsive">
+                <table class="data-table" id="transport-table">
+                  <thead>
+                    <tr>
+                      <th>Route Name</th>
+                      <th>Vehicle Number</th>
+                      <th>Driver Name</th>
+                      <th>Contact</th>
+                      <th>Key Stops</th>
+                      <th>Capacity</th>
+                      <th>Allocated</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 11. NOTICES VIEW -->
+        <section id="view-notices" class="view-section">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <select id="notices-filter-audience" class="form-select">
+                <option value="">All Audiences</option>
+                <option value="all">Everyone</option>
+                <option value="teachers">Teachers Only</option>
+                <option value="students">Students Only</option>
+                <option value="parents">Parents Only</option>
+              </select>
+            </div>
+            <div class="toolbar-right">
+              <button id="btn-create-notice" class="btn btn-primary">+ Publish Notice</button>
+            </div>
+          </div>
+
+          <div id="notices-container"></div>
+        </section>
+
+        <!-- 12. REPORTS & UDISE+ VIEW -->
+        <section id="view-reports" class="view-section">
+          <div class="metric-grid">
+            <div class="metric-card">
+              <div class="metric-icon green">📊</div>
+              <div class="metric-info">
+                <h4>Fee Reconciliation</h4>
+                <div class="value" id="report-reconciled-sum">₹0</div>
+                <div class="subtitle">Audited Net Collections</div>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon blue">🏫</div>
+              <div class="metric-info">
+                <h4>UDISE+ Compliance</h4>
+                <div class="value">Ready</div>
+                <div class="subtitle">Export schema verified</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+            <!-- Export Actions Card -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Regulatory & Financial Exports</h3>
+              </div>
+              <div class="card-body">
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
+                  Generate standard CSV data files ready for state reporting and audit reconciliation.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                  <button id="btn-download-udise" class="btn btn-secondary">
+                    📥 Download UDISE+ Student Master CSV
+                  </button>
+                  <button id="btn-download-financial-audit" class="btn btn-secondary">
+                    📥 Download Reconciled Financial Audit CSV
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fee Defaulters Roster -->
+            <div class="card">
+              <div class="card-header">
+                <h3>Outstanding Fee Defaulters</h3>
+              </div>
+              <div class="card-body" style="padding: 0;">
+                <div class="table-responsive">
+                  <table class="data-table" id="defaulters-table">
+                    <thead>
+                      <tr>
+                        <th>Adm #</th>
+                        <th>Student</th>
+                        <th>Class</th>
+                        <th>Pending Dues</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Add Student Modal -->
+  <div id="modal-add-student" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Add New Student</h3>
+        <button class="modal-close" onclick="closeModal('modal-add-student')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-add-student">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="std-first-name">First Name *</label>
+              <input type="text" id="std-first-name" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label for="std-last-name">Last Name *</label>
+              <input type="text" id="std-last-name" class="form-input" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="std-class">Class *</label>
+              <select id="std-class" class="form-select" required>
+                <option value="Grade 9">Grade 9</option>
+                <option value="Grade 10">Grade 10</option>
+                <option value="Grade 11">Grade 11</option>
+                <option value="Grade 12">Grade 12</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="std-section">Section *</label>
+              <select id="std-section" class="form-select" required>
+                <option value="A">Section A</option>
+                <option value="B">Section B</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="std-dob">Date of Birth *</label>
+              <input type="date" id="std-dob" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label for="std-gender">Gender *</label>
+              <select id="std-gender" class="form-select" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="std-guardian-name">Guardian / Parent Name *</label>
+              <input type="text" id="std-guardian-name" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label for="std-guardian-phone">Guardian Phone *</label>
+              <input type="tel" id="std-guardian-phone" class="form-input" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-student')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Enroll Student</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student Profile & Status Modal -->
+  <div id="modal-student-profile" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Student Profile</h3>
+        <button class="modal-close" onclick="closeModal('modal-student-profile')">&times;</button>
+      </div>
+      <div class="modal-body" id="student-profile-content"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-student-profile')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Admission Modal -->
+  <div id="modal-new-admission" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>New Admission Application</h3>
+        <button class="modal-close" onclick="closeModal('modal-new-admission')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-new-admission">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="adm-first-name">Student First Name *</label>
+              <input type="text" id="adm-first-name" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label for="adm-last-name">Student Last Name *</label>
+              <input type="text" id="adm-last-name" class="form-input" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="adm-class">Applying For Class *</label>
+              <select id="adm-class" class="form-select" required>
+                <option value="Grade 9">Grade 9</option>
+                <option value="Grade 10">Grade 10</option>
+                <option value="Grade 11">Grade 11</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="adm-dob">Date of Birth *</label>
+              <input type="date" id="adm-dob" class="form-input" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="adm-guardian">Parent / Guardian Name *</label>
+              <input type="text" id="adm-guardian" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label for="adm-phone">Contact Phone *</label>
+              <input type="tel" id="adm-phone" class="form-input" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('modal-new-admission')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Submit Application</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Collect Fee Modal -->
+  <div id="modal-collect-fee" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Collect Fee Payment</h3>
+        <button class="modal-close" onclick="closeModal('modal-collect-fee')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-collect-fee">
+          <div class="form-group">
+            <label for="fee-student-select">Select Student *</label>
+            <select id="fee-student-select" class="form-select" required></select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fee-head">Fee Head *</label>
+              <select id="fee-head" class="form-select" required>
+                <option value="Tuition Fee">Tuition Fee</option>
+                <option value="Transport Fee">Transport Fee</option>
+                <option value="Examination Fee">Examination Fee</option>
+                <option value="Annual Charges">Annual Charges</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="fee-amount">Amount (₹) *</label>
+              <input type="number" id="fee-amount" class="form-input" min="100" max="100000" step="50" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fee-mode">Payment Mode *</label>
+              <select id="fee-mode" class="form-select" required>
+                <option value="Cash">Cash</option>
+                <option value="Online / UPI">Online / UPI</option>
+                <option value="Cheque">Cheque</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="fee-ref">Transaction Reference / Cheque #</label>
+              <input type="text" id="fee-ref" class="form-input" placeholder="e.g. UPI-984392">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('modal-collect-fee')">Cancel</button>
+            <button type="submit" class="btn btn-success">Record Payment</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Printable Fee Receipt Modal -->
+  <div id="modal-fee-receipt" class="modal-overlay">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3>Fee Receipt</h3>
+        <button class="modal-close" onclick="closeModal('modal-fee-receipt')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="receipt-printable-area" class="printable-sheet"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-fee-receipt')">Close</button>
+        <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Print Receipt</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Printable Report Card Modal -->
+  <div id="modal-report-card" class="modal-overlay">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3>Academic Progress Report Card</h3>
+        <button class="modal-close" onclick="closeModal('modal-report-card')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="report-card-printable-area" class="printable-sheet"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modal-report-card')">Close</button>
+        <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Print Report Card</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timetable Slot Modal -->
+  <div id="modal-timetable-slot" class="modal-overlay">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Assign Timetable Period</h3>
+        <button class="modal-close" onclick="closeModal('modal-timetable-slot')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-timetable-slot">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="slot-day">Day of Week *</label>
+              <select id="slot-day" class="form-select" required>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="slot-period">Period *</label>
+              <select id="slot-period" class="form-select" required>
+                <option value="1">Period 1 (08:30 - 09:15)</option>
+                <option value="2">Period 2 (09:15 - 10:00)</option>
+                <option value="3">Period 3 (10:15 - 11:00)</option>
+                <option value="4">Period 4 (11:00 - 11:45)</option>
+                <option value="5">Period 5 (12:30 - 01:15)</option>
+                <option value="6">Period 6 (01:15 - 02:00)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="slot-subject">Subject *</label>
+            <select id="slot-subject" class="form-select" required>
+              <option value="Mathematics">Mathematics</option>
+              <option value="Science">Science</option>
+              <option value="English">English</option>
+              <option value="Social Studies">Social Studies</option>
+              <option value="Hindi">Hindi</option>
+              <option value="Physical Education">Physical Education</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="slot-teacher">Teacher *</label>
+            <select id="slot-teacher" class="form-select" required></select>
+          </div>
+          <div class="form-group">
+            <label for="slot-room">Room Number</label>
+            <input type="text" id="slot-room" class="form-input" value="Room 101">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('modal-timetable-slot')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Schedule Slot</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- API Integration Guide Modal -->
+  <div id="modal-api-guide" class="modal-overlay">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3>Backend API Connection Guide</h3>
+        <button class="modal-close" onclick="closeModal('modal-api-guide')">&times;</button>
+      </div>
+      <div class="modal-body" style="font-size: 0.9rem; line-height: 1.6;">
+        <p><strong>Architecture Overview:</strong></p>
+        <p>This standalone HTML edition currently operates in <strong>Offline Demo Mode</strong> utilizing browser <code>localStorage</code>. It does not send any student records over the network.</p>
+        <br>
+        <p><strong>Connecting to the Production Node.js Server:</strong></p>
+        <p>To connect this interface to the real backend running on port 5000:</p>
+        <ol style="margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 1rem;">
+          <li>Start the backend server: <code>npm.cmd start</code></li>
+          <li>Login to obtain a JWT token: <code>POST /api/auth/login</code> with valid credentials.</li>
+          <li>Set the HTTP request headers in your fetch calls:
+            <pre style="background: #f1f5f9; padding: 0.5rem; border-radius: 4px; margin: 0.5rem 0;">Authorization: Bearer &lt;TOKEN&gt;
+x-school-id: &lt;SCHOOL_ID&gt;
+Content-Type: application/json</pre>
+          </li>
+          <li>Endpoints available: <code>/api/students</code>, <code>/api/fees</code>, <code>/api/admissions</code>, <code>/api/attendance</code>, etc.</li>
+        </ol>
+        <p>See <a href="README.md" target="_blank">standalone-html/README.md</a> for detailed instructions.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="closeModal('modal-api-guide')">Got It</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- Vanilla Application Script -->
+  <script src="app.js"></script>
+</body>
+</html>
